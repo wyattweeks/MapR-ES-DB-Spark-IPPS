@@ -64,7 +64,7 @@ object ETLPayment {
     //df2.first
     //df2.createOrReplaceTempView("payments")
 
-   // import spark.implicits._
+   import spark.implicits._
    // val ds: Dataset[Payment] = spark.sql("select Physician_Profile_ID as physician_id, Date_of_Payment as date_payment, Record_ID as record_id, Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name as payer,  amount, Physician_Specialty, Nature_of_Payment_or_Transfer_of_Value as Nature_of_payment, Physician_First_Name as physician_name_first, Physician_Middle_Name as physician_name_middle, Physician_Last_Name as physician_name_last, Physician_Name_Suffix as physician_name_suffix, Recipient_City as recipient_city, Recipient_State as recipient_state, Recipient_Zip_Code as recipient_zip, Recipient_Country as recipient_country from payments").as[Payment]
    // ds.cache
    // ds.count

@@ -60,16 +60,16 @@ object ETLPayment {
     val toDouble = udf[Double, String](_.toDouble)
     val df = spark.read.option("header", "true").csv(pfile)
 
-    //val df2 = df.withColumn("amount", toDouble(df("Total_Amount_of_Payment_USDollars")))
-    //df2.first
-    //df2.createOrReplaceTempView("payments")
+    val df2 = df.withColumn("total_discharges", toDouble(df("total_discharges")))
+    df2.first
+    df2.createOrReplaceTempView("payments")
 
    import spark.implicits._
-   // val ds: Dataset[Payment] = spark.sql("select Physician_Profile_ID as physician_id, Date_of_Payment as date_payment, Record_ID as record_id, Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name as payer,  amount, Physician_Specialty, Nature_of_Payment_or_Transfer_of_Value as Nature_of_payment, Physician_First_Name as physician_name_first, Physician_Middle_Name as physician_name_middle, Physician_Last_Name as physician_name_last, Physician_Name_Suffix as physician_name_suffix, Recipient_City as recipient_city, Recipient_State as recipient_state, Recipient_Zip_Code as recipient_zip, Recipient_Country as recipient_country from payments").as[Payment]
-   // ds.cache
-   // ds.count
-   // ds.createOrReplaceTempView("payments")
-   // ds.show
+   val ds: Dataset[Payment] = spark.sql("select DRG Definition as drg_definition, Provider Id as provider_id, Provider Name as provider_name, Provider Street Address as provider_address, Provider City as provider_city, Provider State as provider_state, Provider Zip Code as provider_zip, Hospital Referral Region Description as hospital_description, Total Discharges as total_discharges, Average Covered Charges as avg_covered_charges, Average Total Payments as avg_total_payments, Average Medicare Payments as avg_medicare_payments from payments").as[Payment]
+   ds.cache
+   ds.count
+   ds.createOrReplaceTempView("payments")
+   ds.show
    // spark.sql("select physician_specialty, count(*) as cnt, sum(amount)as total from payments group by physician_specialty order by total desc").show()
 
    // ds.filter($"amount" > 1000).show()

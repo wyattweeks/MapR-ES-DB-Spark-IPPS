@@ -28,50 +28,43 @@ object SparkKafkaConsumer {
 
   /*
    *position of values in csv
-   *WW change-added everything after nature_of_payment and corresponding parse changes
-5 Physician_Profile_ID as physician_id, 
-31 Date_of_Payment as date_payment, 
-45 Record_ID as record_id, 
-27 Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name as payer,  
-30 amount, 
-19 Physician_Specialty, 
-34 Nature_of_Payment_or_Transfer_of_Value as Nature_of_payment,
-6 Physician_First_Name as physician_name_first,
-7 Physician_Middle_Name as physician_name_middle,
-8 Physician_Last_Name as physician_name_last,
-9 Physician_Name_Suffix as physician_name_suffix,
-12 Recipient_City as recipient_city,
-13 Recipient_State as recipient_state,
-14 Recipient_Zip_Code as recipient_zip,
-15 Recipient_Country as recipient_country
+0 DRG Definition as drg_definition,
+1 Provider Id as provider_id,
+2 Provider Name as provider_name,
+3 Provider Street Address as provider_address,
+4 Provider City as provider_city,
+5 Provider State as provider_state,
+6 Provider Zip Code as provider_zip,
+7 Hospital Referral Region Description as hospital_description,
+8 Total Discharges as total_discharges,
+9 Average Covered Charges as avg_covered_charges,
+10 Average Total Payments as avg_total_payments,
+11 Average Medicare Payments as avg_medicare_payments
 */
-  case class Payment(physician_id: String, date_payment: String, record_id: String, payer: String, amount: Double, physician_specialty: String, nature_of_payment: String, physician_name_first: String, physician_name_middle: String, physician_name_last: String, physician_name_suffix: String, recipient_city: String, recipient_state: String, recipient_zip: String, recipient_country: String) extends Serializable
+  case class Payment(drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 
-  case class PaymentwId(_id: String, physician_id: String, date_payment: String, payer: String, amount: Double, physician_specialty: String, nature_of_payment: String, physician_name_first: String, physician_name_middle: String, physician_name_last: String, physician_name_suffix: String, recipient_city: String, recipient_state: String, recipient_zip: String, recipient_country: String) extends Serializable
+  case class PaymentwId(_id: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 
   def parsePayment(str: String): Payment = {
     val td = str.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
-    Payment(td(5).replaceAll("\"", ""), 
-            td(31).replaceAll("\"", ""),
-            td(45).replaceAll("\"", ""), 
-            td(27).replaceAll("\"", ""),
-            Try(td(30).toDouble) getOrElse 0.0,
-            td(19).replaceAll("\"", ""),
-            td(34).replaceAll("\"", ""),
+    Payment(td(0).replaceAll("\"", ""), 
+            td(1).replaceAll("\"", ""),
+            td(2).replaceAll("\"", ""), 
+            td(3).replaceAll("\"", ""),
+            td(4).replaceAll("\"", ""),
+            td(5).replaceAll("\"", ""),
             td(6).replaceAll("\"", ""),
             td(7).replaceAll("\"", ""),
-            td(8).replaceAll("\"", ""),
-            td(9).replaceAll("\"", ""),
-            td(12).replaceAll("\"", ""),
-            td(13).replaceAll("\"", ""),
-            td(14).replaceAll("\"", ""),
-            td(15).replaceAll("\"", ""))
+            Try(td(8).toDouble) getOrElse 0.0,
+            Try(td(9).toDouble) getOrElse 0.0,
+            Try(td(10).toDouble) getOrElse 0.0,
+            Try(td(11).toDouble) getOrElse 0.0
   }
 
   def parsePaymentwID(str: String): PaymentwId = {
     val pa = parsePayment(str)
-    val id = pa.physician_id + '_' + pa.date_payment + '_' + pa.record_id
-    PaymentwId(id, pa.physician_id, pa.date_payment, pa.payer, pa.amount, pa.physician_specialty, pa.nature_of_payment, pa.physician_name_first, pa.physician_name_middle, pa.physician_name_last, pa.physician_name_suffix, pa.recipient_city, pa.recipient_state, pa.recipient_zip, pa.recipient_country)
+    val id = pa.provider_id + '_' + pa.hospital_description + '_' + pa.drg_definition
+    PaymentwId(id, pa.drg_definition, pa.provider_id, pa.provider_name, pa.provider_address, pa.provider_city, pa.provider_state, pa.provider_zip, pa.hospital_description, pa.total_discharges, pa.avg_covered_charges, pa.avg_total_payments, pa.avg_medicare_payments)
   }
 
   def main(args: Array[String]) = {

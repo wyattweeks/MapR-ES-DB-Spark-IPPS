@@ -18,32 +18,30 @@ reads a CSV file. transforms CSV to JSON and writes to MapR-DB JSON
 
 object ETLPayment {
 
-  case class Payment(record_id: String, physician_id: String, date_payment: String, payer: String, amount: Double, physician_specialty: String, nature_of_payment: String, physician_name_first: String, physician_name_middle: String, physician_name_last: String, physician_name_suffix: String, recipient_city: String, recipient_state: String, recipient_zip: String, recipient_country: String) extends Serializable
+  case class Payment(drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 
-  case class PaymentwId(_id: String, physician_id: String, date_payment: String, payer: String, amount: Double, physician_specialty: String, nature_of_payment: String, physician_name_first: String, physician_name_middle: String, physician_name_last: String, physician_name_suffix: String, recipient_city: String, recipient_state: String, recipient_zip: String, recipient_country: String) extends Serializable
+  case class PaymentwId(_id: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 
   val schema = StructType(Array(
     StructField("_id", StringType, true),
-    StructField("physician_id", StringType, true),
-    StructField("date_payment", StringType, true),
-    StructField("payer", StringType, true),
-    StructField("amount", DoubleType, true),
-    StructField("physician_specialty", StringType, true),
-    StructField("nature_of_payment", StringType, true),
-    StructField("physician_name_first", StringType, true),
-    StructField("physician_name_middle", StringType, true),
-    StructField("physician_name_last", StringType, true),
-    StructField("physician_name_suffix", StringType, true),
-    StructField("recipient_city", StringType, true),
-    StructField("recipient_state", StringType, true),
-    StructField("recipient_zip", StringType, true),
-    StructField("recipient_country", StringType, true)
+    StructField("drg_definition", StringType, true),
+    StructField("provider_id", StringType, true),
+    StructField("provider_name", StringType, true),
+    StructField("provider_address", DoubleType, true),
+    StructField("provider_city", StringType, true),
+    StructField("provider_state", StringType, true),
+    StructField("provider_zip", StringType, true),
+    StructField("hospital_description", StringType, true),
+    StructField("total_discharges", StringType, true),
+    StructField("avg_covered_charges", StringType, true),
+    StructField("avg_total_payments", StringType, true),
+    StructField("avg_medicare_payments", StringType, true)
   ))
   
 
   def createPaymentwId(p: Payment): PaymentwId = {
-    val id = p.physician_id + '_' + p.date_payment + '_' + p.record_id
-    PaymentwId(id, p.physician_id, p.date_payment, p.payer, p.amount, p.physician_specialty, p.nature_of_payment, p.physician_name_first, p.physician_name_middle, p.physician_name_last, p.physician_name_suffix, p.recipient_city, p.recipient_state, p.recipient_zip, p.recipient_country)
+    val id = pa.provider_id + '_' + pa.hospital_description + '_' + pa.drg_definition
+    PaymentwId(id, pa.drg_definition, pa.provider_id, pa.provider_name, pa.provider_address, pa.provider_city, pa.provider_state, pa.provider_zip, pa.hospital_description, pa.total_discharges, pa.avg_covered_charges, pa.avg_total_payments, pa.avg_medicare_payments)
   }
 
   def main(args: Array[String]) {

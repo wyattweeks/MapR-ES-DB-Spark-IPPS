@@ -18,40 +18,36 @@ object QueryPayment {
   @JsonIgnoreProperties(ignoreUnknown = true)
   case class PaymentwId(
     @JsonProperty("_id") _id: String,
-    @JsonProperty("physician_id") physician_id: String,
-    @JsonProperty("date_payment") date_payment: String,
-    @JsonProperty("payer") payer: String,
-    @JsonProperty("amount") amount: Double,
-    @JsonProperty("physician_specialty") physician_specialty: String,
-    @JsonProperty("nature_of_payment") nature_of_payment: String,
-    @JsonProperty("physician_name_first") physician_name_first: String,
-    @JsonProperty("physician_name_middle") physician_name_middle: String,
-    @JsonProperty("physician_name_last") physician_name_last: String,
-    @JsonProperty("physician_name_suffix") physician_name_suffix: String,
-    @JsonProperty("recipient_city") recipient_city: String,
-    @JsonProperty("recipient_state") recipient_state: String,
-    @JsonProperty("recipient_zip") recipient_zip: String,
-    @JsonProperty("recipient_country") recipient_country: String
+    @JsonProperty("drg_definition") drg_definition: String,
+    @JsonProperty("provider_id") provider_id: String,
+    @JsonProperty("provider_name") provider_name: String,
+    @JsonProperty("provider_address") provider_address: String,
+    @JsonProperty("provider_city") provider_city: String,
+    @JsonProperty("provider_state") provider_state: String,
+    @JsonProperty("provider_zip") physician_name_first: String,
+    @JsonProperty("hospital_description") physician_name_middle: String,
+    @JsonProperty("total_discharges") physician_name_last: Double,
+    @JsonProperty("avg_covered_charges") physician_name_suffix: Double,
+    @JsonProperty("avg_total_payments") recipient_city: Double,
+    @JsonProperty("avg_medicare_payments") recipient_state: Double
   ) extends Serializable
   /*
-  case class PaymentwId(_id: String, physician_id: String, date_payment: String, payer: String, amount: Double, physician_specialty: String, nature_of_payment: String, physician_name_first: String, physician_name_middle: String, physician_name_last: String, physician_name_suffix: String, recipient_city: String, recipient_state: String, recipient_zip: String, recipient_country: String) extends Serializable
+  case class PaymentwId(_id: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 */
   val schema = StructType(Array(
     StructField("_id", StringType, true),
-    StructField("physician_id", StringType, true),
-    StructField("date_payment", StringType, true),
-    StructField("payer", StringType, true),
-    StructField("amount", DoubleType, true),
-    StructField("physician_specialty", StringType, true),
-    StructField("nature_of_payment", StringType, true),
-    StructField("physician_name_first", StringType, true),
-    StructField("physician_name_middle", StringType, true),
-    StructField("physician_name_last", StringType, true),
-    StructField("physician_name_suffix", StringType, true),
-    StructField("recipient_city", StringType, true),
-    StructField("recipient_state", StringType, true),
-    StructField("recipient_zip", StringType, true),
-    StructField("recipient_country", StringType, true)
+    StructField("drg_definition", StringType, true),
+    StructField("provider_id", StringType, true),
+    StructField("provider_name", StringType, true),
+    StructField("provider_address", DoubleType, true),
+    StructField("provider_city", StringType, true),
+    StructField("provider_state", StringType, true),
+    StructField("provider_zip", StringType, true),
+    StructField("hospital_description", StringType, true),
+    StructField("total_discharges", StringType, true),
+    StructField("avg_covered_charges", StringType, true),
+    StructField("avg_total_payments", StringType, true),
+    StructField("avg_medicare_payments", StringType, true)
   ))
 
   def main(args: Array[String]) {
@@ -71,42 +67,42 @@ object QueryPayment {
     // load payment dataset from MapR-DB 
     val pdf: Dataset[PaymentwId] = spark.sparkSession.loadFromMapRDB[PaymentwId](tableName, schema).as[PaymentwId]
 
-    println("Filter for payment amount > $2000")
-    pdf.filter($"amount" > 2000).show()
-    println("Select physician id , amount ")
-    pdf.select("_id", "physician_id", "amount").show
+   // println("Filter for payment amount > $2000")
+   // pdf.filter($"amount" > 2000).show()
+   // println("Select physician id , amount ")
+   // pdf.select("_id", "physician_id", "amount").show
 
-    println("What are the Top 5 Nature of Payments by count ")
-    pdf.groupBy("Nature_of_payment").count().orderBy(desc("count")).show(5)
+   // println("What are the Top 5 Nature of Payments by count ")
+   // pdf.groupBy("Nature_of_payment").count().orderBy(desc("count")).show(5)
 
-    println("What are the Nature of Payments with payments > $1000 with count")
-    pdf.filter($"amount" > 1000).groupBy("Nature_of_payment").count().orderBy(desc("count")).show()
+    //println("What are the Nature of Payments with payments > $1000 with count")
+    //pdf.filter($"amount" > 1000).groupBy("Nature_of_payment").count().orderBy(desc("count")).show()
 
-    println("What are the  payments for physician id 98485")
-    pdf.filter($"_id".like("98485%")).select($"_id", $"physician_specialty", $"amount").show(false)
+    //println("What are the  payments for physician id 98485")
+    //pdf.filter($"_id".like("98485%")).select($"_id", $"physician_specialty", $"amount").show(false)
 
-    println("What are the  payments for the month of february")
-    pdf.filter($"_id".like("%_02/%")).select($"_id", $"physician_specialty", $"amount").show(false)
+    //println("What are the  payments for the month of february")
+    //pdf.filter($"_id".like("%_02/%")).select($"_id", $"physician_specialty", $"amount").show(false)
 
     // Create a temporary view in order to use SQL for queries
-    pdf.createOrReplaceTempView("payments")
+    //pdf.createOrReplaceTempView("payments")
     //Top 5 nature of payment by total amount
-    println("Top 5 nature of payment by total amount")
-    spark.sql("select Nature_of_payment,  sum(bround(amount)) as total from payments group by Nature_of_payment order by total desc limit 5").show
-    println("Top 5 Physician Specialties by Amount with count")
-    spark.sql("select physician_specialty, count(*) as cnt, sum(bround(amount)) as total from payments where physician_specialty IS NOT NULL group by physician_specialty order by total desc limit 5").show
+    //println("Top 5 nature of payment by total amount")
+    //spark.sql("select Nature_of_payment,  sum(bround(amount)) as total from payments group by Nature_of_payment order by total desc limit 5").show
+    //println("Top 5 Physician Specialties by Amount with count")
+    //spark.sql("select physician_specialty, count(*) as cnt, sum(bround(amount)) as total from payments where physician_specialty IS NOT NULL group by physician_specialty order by total desc limit 5").show
 
     //Top 5 Physician Specialties by total Amount
-    println("Top 5 Physician Specialties by Amount")
-    spark.sql("select physician_specialty, sum(bround(amount)) as total from payments where physician_specialty IS NOT NULL group by physician_specialty order by total desc limit 5").show(false)
+    //println("Top 5 Physician Specialties by Amount")
+    //spark.sql("select physician_specialty, sum(bround(amount)) as total from payments where physician_specialty IS NOT NULL group by physician_specialty order by total desc limit 5").show(false)
 
     //find payments for physician id 98485
-    println("find payments for physician id 98485")
-    spark.sql("select _id, physician_id, amount from payments where _id like '98485%'").show(false)
+    //println("find payments for physician id 98485")
+    //spark.sql("select _id, physician_id, amount from payments where _id like '98485%'").show(false)
 
     //find payments for february
-    println("find payments for february")
-    spark.sql("select _id, physician_id, amount from payments where _id like '%_02/%'").show(false)
+    //println("find payments for february")
+    //spark.sql("select _id, physician_id, amount from payments where _id like '%_02/%'").show(false)
   }
 }
 

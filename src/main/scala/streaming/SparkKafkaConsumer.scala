@@ -58,7 +58,7 @@ object SparkKafkaConsumer {
             Try(td(8).toDouble) getOrElse 0.0,
             Try(td(9).toDouble) getOrElse 0.0,
             Try(td(10).toDouble) getOrElse 0.0,
-            Try(td(11).toDouble) getOrElse 0.0
+            Try(td(11).toDouble) getOrElse 0.0)
   }
 
   def parsePaymentwID(str: String): PaymentwId = {

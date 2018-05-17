@@ -78,7 +78,7 @@ curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/strea
 curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/table/create?path=/user/mapr/demo.mapr.com/tables/payments&tabletype=json&defaultreadperm=p&defaultwriteperm=p"
 
 #copy MapR-ES-DB-Spark-Payments data source file payments.csv, from public_data to the MapR 'files' volume
-cp /public_data/demos_healthcare/MapR-ES-DB-Spark-Payments/data/payments.csv /mapr/$MAPR_CLUSTER/user/mapr/demo.mapr.com/files/payments.csv
+cp /public_data/demos_healthcare/MapR-ES-DB-Spark-IPPS/data/payments.csv /mapr/$MAPR_CLUSTER/user/mapr/demo.mapr.com/files/payments.csv
 
 # Run the java publisher client and the Spark consumer client**
 # This java client will read lines from the file in ~/MapR-ES-DB-Spark-Payments/data/payments.csv and publish them to the topic /streams/paystream:payments. 

@@ -70,14 +70,13 @@ object SparkKafkaConsumer {
   case class PaymentwId(_id: String, drg_code: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, provider_region: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 
   def parsePayment(str: String): Payment = {
-    // val td = str.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
-    val td = str.split(",")
-    Payment(parseDrgCode(td(0)), parseDrgD(td(0)), td(1), td(2), td(3), td(4), td(5), td(6), td(7),
-      parseDouble(td(8)),
-      parseDouble(td(9)),
-      parseDouble(td(10)),
-      parseDouble(td(11)))
-  }
+     val td = str.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
+   Payment(parseDrgCode(td(0)),parseDrgD(td(0)), td(1),td(2).replaceAll("\"", ""), td(3),td(4),td(5), td(6),td(7),
+           parseDouble(td(8)) ,
+           parseDouble(td(9)) ,
+           parseDouble(td(10)) ,
+           parseDouble(td(11)) )
+ }
 
   def parsePaymentwID(str: String): PaymentwId = {
     val pa = parsePayment(str)

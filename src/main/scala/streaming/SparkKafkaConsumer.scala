@@ -41,30 +41,48 @@ object SparkKafkaConsumer {
 10 Average Total Payments as avg_total_payments,
 11 Average Medicare Payments as avg_medicare_payments
 */
-  case class Payment(drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
+  /*
+ Example string
+   "039 - EXTRACRANIAL PROCEDURES W/O CC/MCC,10011,ST VINCENT'S EAST,50 MEDICAL PARK EAST DRIVE,BIRMINGHAM,AL,35235,AL - Birmingham,25,$13998.28,$5417.56,$4129.16"
+ Becomes:
+   PaymentwId(10011_039,039,EXTRACRANIAL PROCEDURES W/O CC/MCC,10011,ST VINCENT'S EAST,50 MEDICAL PARK EAST DRIVE,BIRMINGHAM,AL,35235,AL - Birmingham,25.0,13998.28,5417.56,4129.16)
+   *
+   *  
+   */
+  // remove dollar sign and convert string to double
+  def parseDouble(str: String): Double = {
+    val str2 = str.replaceAll("\\$", "")
+    Try(str2.toDouble) getOrElse 0.0
+  }
+  // get drg code from string
+  def parseDrgCode(str: String): String = {
+    val d = str.split("-")
+    d(0).trim
+  }
+  // get drg description from string
+  def parseDrgD(str: String): String = {
+    val d = str.split("-")
+    d(1).trim
+  }
 
-  case class PaymentwId(_id: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, hospital_description: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
+  case class Payment(drg_code: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, provider_region: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
+
+  case class PaymentwId(_id: String, drg_code: String, drg_definition: String, provider_id: String, provider_name: String, provider_address: String, provider_city: String, provider_state: String, provider_zip: String, provider_region: String, total_discharges: Double, avg_covered_charges: Double, avg_total_payments: Double, avg_medicare_payments: Double) extends Serializable
 
   def parsePayment(str: String): Payment = {
-    val td = str.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
-    Payment(td(0).replaceAll("\"", ""), 
-            td(1).replaceAll("\"", ""),
-            td(2).replaceAll("\"", ""), 
-            td(3).replaceAll("\"", ""),
-            td(4).replaceAll("\"", ""),
-            td(5).replaceAll("\"", ""),
-            td(6).replaceAll("\"", ""),
-            td(7).replaceAll("\"", ""),
-            Try(td(8).toDouble) getOrElse 0.0,
-            Try(td(9).toDouble) getOrElse 0.0,
-            Try(td(10).toDouble) getOrElse 0.0,
-            Try(td(11).toDouble) getOrElse 0.0)
+    // val td = str.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
+    val td = str.split(",")
+    Payment(parseDrgCode(td(0)), parseDrgD(td(0)), td(1), td(2), td(3), td(4), td(5), td(6), td(7),
+      parseDouble(td(8)),
+      parseDouble(td(9)),
+      parseDouble(td(10)),
+      parseDouble(td(11)))
   }
 
   def parsePaymentwID(str: String): PaymentwId = {
     val pa = parsePayment(str)
-    val id = pa.provider_id + '_' + pa.hospital_description + '_' + pa.drg_definition
-    PaymentwId(id, pa.drg_definition, pa.provider_id, pa.provider_name, pa.provider_address, pa.provider_city, pa.provider_state, pa.provider_zip, pa.hospital_description, pa.total_discharges, pa.avg_covered_charges, pa.avg_total_payments, pa.avg_medicare_payments)
+    val id = pa.provider_id + '_' + pa.drg_code
+    PaymentwId(id, pa.drg_code, pa.drg_definition, pa.provider_id, pa.provider_name, pa.provider_address, pa.provider_city, pa.provider_state, pa.provider_zip, pa.provider_region, pa.total_discharges, pa.avg_covered_charges, pa.avg_total_payments, pa.avg_medicare_payments)
   }
 
   def main(args: Array[String]) = {
@@ -115,7 +133,7 @@ object SparkKafkaConsumer {
 
     // pDStream.print(3)
     pDStream.print
-    pDStream.saveToMapRDB(tableName, createTable=false, bulkInsert=true, idFieldPath = "_id")
+    pDStream.saveToMapRDB(tableName, createTable = false, bulkInsert = true, idFieldPath = "_id")
 
     ssc.start()
     ssc.awaitTermination()

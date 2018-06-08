@@ -1,0 +1,1 @@
+create or replace view ipps as select * from dfs.`/user/mapr/demo.mapr.com/tables/payments`;

@@ -41,16 +41,7 @@ object SparkKafkaConsumer {
 10 Average Total Payments as avg_total_payments,
 11 Average Medicare Payments as avg_medicare_payments
 */
-  /*
- Example string
-   "039 - EXTRACRANIAL PROCEDURES W/O CC/MCC,10011,ST VINCENT'S EAST,50 MEDICAL PARK EAST DRIVE,BIRMINGHAM,AL,35235,AL - Birmingham,25,$13998.28,$5417.56,$4129.16"
- Becomes:
-   PaymentwId(10011_039,039,EXTRACRANIAL PROCEDURES W/O CC/MCC,10011,ST VINCENT'S EAST,50 MEDICAL PARK EAST DRIVE,BIRMINGHAM,AL,35235,AL - Birmingham,25.0,13998.28,5417.56,4129.16)
-   *
-   *  
-   */
-  // remove dollar sign and convert string to double
-  def parseDouble(str: String): Double = {
+def parseDouble(str: String): Double = {
     val str2 = str.replaceAll("\\$", "")
     Try(str2.toDouble) getOrElse 0.0
   }
@@ -83,7 +74,7 @@ object SparkKafkaConsumer {
     val id = pa.provider_id + '_' + pa.drg_code
     PaymentwId(id, pa.drg_code, pa.drg_definition, pa.provider_id, pa.provider_name, pa.provider_address, pa.provider_city, pa.provider_state, pa.provider_zip, pa.provider_region, pa.total_discharges, pa.avg_covered_charges, pa.avg_total_payments, pa.avg_medicare_payments)
   }
-
+  
   def main(args: Array[String]) = {
     var tableName: String = "/user/mapr/demo.mapr.com/tables/payments"
     var topicc: String = "/user/mapr/demo.mapr.com/streams/paystream:payments"

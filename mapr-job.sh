@@ -75,7 +75,7 @@ curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/volum
 # Create MapR-ES Stream, Topic, and MapR-DB table via REST APIs
 curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/stream/create?path=/user/mapr/demo.mapr.com/streams/paystream&produceperm=p&consumeperm=p&topicperm=p"
 curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/stream/topic/create?path=/user/mapr/demo.mapr.com/streams/paystream&topic=payments"
-curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/table/create?path=/user/mapr/demo.mapr.com/tables/payments&tabletype=json&defaultreadperm=p&defaultwriteperm=p&bulkload=true"
+curl -sSk -X POST -u ${MAPR_ADMIN}:${MAPR_ADMIN_PASSWORD} "${MCS_URL}/rest/table/create?path=/user/mapr/demo.mapr.com/tables/payments&tabletype=json&defaultreadperm=p&defaultwriteperm=p"
 
 #copy MapR-ES-DB-Spark-Payments data source file payments.csv, from public_data to the MapR 'files' volume
 cp /public_data/demos_healthcare/MapR-ES-DB-Spark-IPPS/data/payments.csv /mapr/$MAPR_CLUSTER/user/mapr/demo.mapr.com/files/payments.csv

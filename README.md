@@ -1,6 +1,6 @@
-# Heathcare Data - Streaming ETL Pipeline and Data Exploration on IPPS Dataset
+======Heathcare Data - Streaming ETL Pipeline and Data Exploration on IPPS Dataset======
 
-# Deployment Build Complete.  Documentation / Readme = under-construction
+====Deployment Build Complete.  Documentation / Readme = under-revision====
 
 cd /public_data/demos_healthcare/MapR-ES-DB-Spark-IPPS
 java -cp /public_data/demos_healthcare/MapR-ES-DB-Spark-IPPS/target/mapr-es-db-spark-payment-1.0.jar:./target/* streams.MsgProducer
